@@ -1,0 +1,8 @@
+#include <iostream>
+int main() {
+    int a, b, c, d;
+    std::cin >> a >> b >> c >> d;
+    int result = ((a << 5) + (a << 1)) + ((((a << 3) + (a << 2) + a) + ((c << 3) + (c << 2))) >> 6) - ((b << 11) + (b << 9)) + ((d << 7) - d) - ((c << 4) + (c << 1));
+    std::cout << result;
+    return 0;
+}

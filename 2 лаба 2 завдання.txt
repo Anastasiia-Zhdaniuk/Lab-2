@@ -1,0 +1,84 @@
+#include <iostream>
+#include <string>
+
+// Функція для шифрування тексту
+void Crypt(std::string text[4], unsigned short rez[4][16]) {
+    short i, j, l;
+
+    // Введення рядків тексту від користувача
+    for (int i = 0; i < 4; i++) {
+        std::cout << "enter line " << i + 1 << ":";
+        std::getline(std::cin, text[i]);
+    }
+
+    // Заповнення рядків пробілами до довжини 16 символів
+    for (i = 0; i < 4; i++) {
+        while (text[i].length() < 16) {
+            text[i] += ' ';
+        }
+    }
+
+    // Шифрування тексту
+    std::cout << "\nCrypted info:\n";
+    for (i = 0; i < 4; i++) {
+        for (j = 0; j < 16; j++) {
+            unsigned char c;
+            unsigned short r, t, b;
+            r = 0;
+            c = text[i][j]; // Отримання символу з тексту
+
+            r |= i; // Включення індексу рядка
+            r |= (j << 2); // Включення індексу символу з зсувом на 2 біти
+            int ascii = (int)c; // Отримання ASCII коду символу
+            r |= (ascii << 6); // Включення ASCII коду з зсувом на 6 бітів
+
+            // Розрахунок першого біта перевірки парності
+            t = 1;
+            b = 0;
+            for (l = 0; l < 5; l++) {
+                if (r & t) {
+                    if (b == 0) b = 1; else b = 0;
+                }
+                t <<= 1;
+            }
+            r |= (b << 14); // Додавання біта перевірки парності до результату
+
+            // Розрахунок другого біта перевірки парності
+            t = 1;
+            b = 0;
+            for (l = 6; l < 13; l++) {
+                if (r & t) {
+                    if (b == 0) b = 1; else b = 0;
+                }
+                t <<= 1;
+            }
+            r |= b << 15; // Додавання біта перевірки парності до результату
+
+            rez[i][j] = r; // Збереження результату
+            std::cout << std::hex << rez[i][j] << " "; // Виведення результату у шістнадцятковому форматі
+        }
+        std::cout << std::endl;
+    }
+}
+
+// Функція для дешифрування тексту
+void Decrypt(unsigned short rez[4][16]) {
+    std::cout << "\nDecrypted info:\n";
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 16; ++j) {
+            unsigned short r = rez[i][j];
+            unsigned char ascii = (r >> 6) & 0xFF; // Отримання ASCII коду символу з зашифрованого значення
+            char decryptedChar = static_cast<char>(ascii); // Перетворення ASCII коду в символ
+            std::cout << decryptedChar; // Виведення дешифрованого символу
+        }
+        std::cout << std::endl;
+    }
+}
+
+int main() {
+    std::string text[4]; // Масив для зберігання введених рядків
+    unsigned short rez[4][16]; // Масив для зберігання зашифрованих значень
+    Crypt(text, rez); // Виклик функції шифрування
+    Decrypt(rez); // Виклик функції дешифрування
+    return 0;
+}
